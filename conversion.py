@@ -56,7 +56,44 @@ for image_path in tqdm(glob.glob(os.path.join(cvat_annotation_export_path, '*lab
     img_converted = np.vectorize(f)(img)
     cv2.imwrite(image_path, img_converted)
     
+#instance ids   
+#assumed that attribute is crowd is correctly applied in cvat
+for image_path in tqdm(glob.glob(os.path.join(cvat_annotation_export_path, '*instanceIds.png')), desc = "Generating Instance Images"):
+    print(image_path)
+    img = cv2.imread(image_path, cv2.IMREAD_UNCHANGED)
     
+    #backup
+    basename = os.path.basename(image_path)
+    backup_name = os.path.splitext(basename)[0] + '_backup' + os.path.splitext(basename)[1]
+    img = cv2.imread(image_path, cv2.IMREAD_ANYDEPTH)
+    cv2.imwrite(os.path.join(cvat_annotation_export_path, backup_name), img)
+     
+    #generate mapping
+    cvat_to_cityscapes_instanceId={}
+    unique_instances = np.unique(img)
+    
+    #handle stuff classes
+    for instance_id in unique_instances:
+        #stuff classes assumes correct handeling in cvat
+        if instance_id < 1000:
+            cvat_to_cityscapes_instanceId[instance_id] = cvat_to_cityscapes[instance_id]
+    
+    #generate instance classes
+    instance_categories = np.unique((img/1000).astype(int))
+    for instance_categorie in instance_categories[instance_categories != 0]:
+        lower_bound = instance_categorie*1000
+        upper_bound = (instance_categorie+1)*1000      
+
+        for instance_counter, instance in enumerate(unique_instances[(lower_bound <= unique_instances) & (unique_instances < upper_bound)]):
+            cvat_to_cityscapes_instanceId[instance] = cvat_to_cityscapes[instance_categorie]*1000+instance_counter
+    
+    
+    print(cvat_to_cityscapes_instanceId)
+    
+    h = lambda x: cvat_to_cityscapes_instanceId[x] 
+    
+    img_converted_instanceId  = np.vectorize(h)(img)
+    cv2.imwrite(image_path, img_converted_instanceId.astype(np.uint16))
 
 
                 
