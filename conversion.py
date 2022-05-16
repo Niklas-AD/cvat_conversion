@@ -46,7 +46,7 @@ g = lambda x: cvat_to_cityscapes_trainId[x]
 
               
 # apply mapping to folder
-for image_path in tqdm(glob.glob(os.path.join(cvat_annotation_export_path, '*labelIds.png'))):
+for image_path in tqdm(glob.glob(os.path.join(cvat_annotation_export_path, '*labelIds.png')), desc="Generating Label Images"):
     
     #backup
     basename = os.path.basename(image_path)
