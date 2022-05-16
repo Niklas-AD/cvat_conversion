@@ -1,3 +1,8 @@
+"""
+Method to convert output from cvat to use with cityscapesscript
+
+Do not use twice on the same images.
+"""
 import os
 import cv2
 import matplotlib.pyplot as plt
