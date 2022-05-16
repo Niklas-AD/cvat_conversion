@@ -15,7 +15,8 @@ from tqdm import tqdm
 
 cvat_annotation_export_path = './cityscapes/gtFine/train/karlsruhe'
 
-if glob.glob(os.path.join(cvat_annotation_export_path, '*backup.png')): raise Exception('The method is only supposed to run once')
+if glob.glob(os.path.join(cvat_annotation_export_path, '*backup.png')): 
+    raise Exception('The method is only supposed to run once')
 
 #generate mapping
 
